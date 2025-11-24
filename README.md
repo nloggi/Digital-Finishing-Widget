@@ -10,14 +10,14 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
+    
     body {
       margin: 0;
       padding: 0;
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: #f8f9fa;
     }
-
+    
     .option-card {
       background-size: cover;
       background-position: center;
@@ -26,7 +26,7 @@
       overflow: hidden;
       transition: all 0.3s ease;
     }
-
+    
     .option-card::before {
       content: '';
       position: absolute;
@@ -37,52 +37,52 @@
       background: linear-gradient(to bottom, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.9) 100%);
       transition: all 0.3s ease;
     }
-
+    
     .option-card:hover::before {
       background: linear-gradient(to bottom, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.85) 100%);
     }
-
+    
     .option-card-content {
       position: relative;
       z-index: 1;
     }
-
+    
     .selected-card {
       border: 3px solid #EF4444 !important;
       box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3);
       transform: translateY(-2px);
     }
-
+    
     .selected-card::before {
       background: linear-gradient(to bottom, rgba(239, 68, 68, 0.1) 0%, rgba(255,255,255,0.95) 100%);
     }
-
+    
     .disabled-card {
       opacity: 0.4;
       pointer-events: none;
     }
-
+    
     .next-button {
       transition: all 0.3s ease;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-
+    
     .next-button:disabled {
       background: #d1d5db;
       cursor: not-allowed;
       box-shadow: none;
     }
-
+    
     .next-button:not(:disabled) {
       background: #EF4444;
     }
-
+    
     .next-button:not(:disabled):hover {
       background: #dc2626;
       box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
       transform: translateY(-1px);
     }
-
+    
     .badge {
       background: #EF4444;
       color: white;
@@ -97,17 +97,17 @@
       cursor: pointer;
       transition: all 0.2s ease;
     }
-
+    
     .badge:hover {
       background: #dc2626;
       box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
       transform: translateY(-1px);
     }
-
+    
     .blueprint-image {
       filter: drop-shadow(0 4px 12px rgba(0,0,0,0.1));
     }
-
+    
     .machine-preview {
       background: white;
       border-radius: 12px;
@@ -115,7 +115,7 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.06);
       transition: all 0.2s ease;
     }
-
+    
     .machine-preview:hover {
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       transform: translateX(4px);
@@ -194,10 +194,6 @@
       {"OEM":"Rotatek","Model":"Universal","SQFT":"420","Size":"Full Converting","Corona":"Yes","Print":["Flexo"],"ColdFoil":"Yes","HotFoil":"Yes","DigitalEmb":"No","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"Yes","FullRotary":"Yes","SemiRotary":"No","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"3","Turret":"Yes"}
     ];
 
-    // Image URLs - using direct file paths with corrected filenames
-    const imageUrls = {
-      // Size options
-      'ultracompact': './assets/Ultra Compact Digital Finisher.webp',
     // Image URLs - using direct file paths
     const imageUrls = {
       // Size options
@@ -212,7 +208,6 @@
       // Curing
       'uv': './assets/UV Curing.webp',
       'led': './assets/LED Curing.webp',
-      'corona': './assets/Corona Treatment.webp',
       'corona': './assets/Carona Treatment.webp',
       // Finishing
       'lamination': './assets/Lamination for Unit.webp',
@@ -226,7 +221,6 @@
       'laser': './assets/Laser Die Cut.webp',
       'knife': './assets/Digital Knife Plotter.webp',
       // Rewinding
-      'single': './assets/Single product rewind.webp',
       'single': './assets/Sinle product rewind.webp',
       'dual': './assets/Dual Product Rewind.webp',
       'semiauto': './assets/Semi Auto Turret.webp',
@@ -271,31 +265,31 @@
 
       const filterMachines = () => {
         let filtered = [...machineDatabase];
-
+        
         // Size filter
         if (selections.size) {
           filtered = filtered.filter(m => m.Size === selections.size);
         }
-
+        
         // Print filter
         if (selections.print.length > 0 && !selections.print.includes('None')) {
           filtered = filtered.filter(machine => {
-            return selections.print.every(p =>
+            return selections.print.every(p => 
               machine.Print.includes(p) || machine.Print.length === 0
             );
           });
         }
-
+        
         // Curing filter
         if (selections.curing && selections.curing !== 'None') {
           filtered = filtered.filter(m => m.Curing.includes(selections.curing));
         }
-
+        
         // Corona filter
         if (selections.corona === 'Yes') {
           filtered = filtered.filter(m => m.Corona !== 'No');
         }
-
+        
         // Finishing features
         if (selections.finishing.length > 0 && !selections.finishing.includes('None')) {
           filtered = filtered.filter(machine => {
@@ -309,7 +303,7 @@
             return true;
           });
         }
-
+        
         // Die cutting
         if (selections.dieCutting) {
           filtered = filtered.filter(machine => {
@@ -320,17 +314,17 @@
             return true;
           });
         }
-
+        
         // Slitting
         if (selections.slitting && selections.slitting !== 'No Slitting') {
           filtered = filtered.filter(m => m.Slitting !== 'No');
         }
-
+        
         // Rewinding
         if (selections.rewinding === 'Turret Rewind') {
           filtered = filtered.filter(m => m.Turret !== 'No');
         }
-
+        
         return filtered.sort((a, b) => a.Model.localeCompare(b.Model));
       };
 
@@ -339,12 +333,12 @@
       const handleSelection = (category, value, multiSelect = false) => {
         if (multiSelect) {
           let current = [...selections[category]];
-
+          
           if (value === 'None') {
             setSelections({ ...selections, [category]: ['None'] });
           } else {
             current = current.filter(v => v !== 'None');
-
+            
             if (current.includes(value)) {
               // Deselect
               current = current.filter(v => v !== value);
@@ -352,7 +346,7 @@
               // Select
               current.push(value);
             }
-
+            
             setSelections({ ...selections, [category]: current.length > 0 ? current : [] });
           }
         } else {
@@ -378,10 +372,10 @@
 
       const getBlueprint = () => {
         if (!selections.size) return imageUrls.blueprint_default;
-
+        
         const sizeKey = selections.size.toLowerCase().replace(/\s+/g, '');
         const step = currentStep;
-
+        
         if (step === 1) return imageUrls[`blueprint_${sizeKey}`];
         if (step === 2 || step === 3 || step === 4) {
           if (sizeKey === 'ultracompact') return imageUrls.ultracompact_q2;
@@ -395,7 +389,7 @@
           if (sizeKey === 'modular') return imageUrls.modular_q6;
           if (sizeKey === 'fullconverting') return imageUrls.full_q5;
         }
-
+        
         return imageUrls.blueprint_default;
       };
 
@@ -410,10 +404,10 @@
           {/* Main Content */}
           <div className="container mx-auto p-6">
             {currentStep === 0 ? (
-              <WelcomePage
-                formData={formData}
-                onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
-                onNext={() => setCurrentStep(1)}
+              <WelcomePage 
+                formData={formData} 
+                onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })} 
+                onNext={() => setCurrentStep(1)} 
               />
             ) : currentStep === 7 ? (
               <ResultsPage machines={filteredMachines} selections={selections} />
@@ -480,7 +474,7 @@
                       )}
                     </div>
                   </div>
-
+                  
                   <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
                     <p className="text-sm text-gray-600 leading-relaxed">
                       {getStepInfo(currentStep)}
@@ -496,7 +490,7 @@
                   {currentStep === 4 && <Question4 selections={selections} onSelect={handleSelection} images={imageUrls} blueprint={getBlueprint()} />}
                   {currentStep === 5 && <Question5 selections={selections} onSelect={handleSelection} images={imageUrls} blueprint={getBlueprint()} />}
                   {currentStep === 6 && <Question6 selections={selections} onSelect={handleSelection} images={imageUrls} blueprint={getBlueprint()} />}
-
+                  
                   {/* Navigation */}
                   <div className="flex justify-between mt-6">
                     {currentStep > 1 && (
@@ -515,7 +509,7 @@
                       {currentStep === 6 ? 'See Results →' : 'Next →'}
                     </button>
                   </div>
-
+                  
                   {/* No Results Warning */}
                   {!filteredMachines.length && (
                     <div className="text-sm text-red-500 text-right mt-3 font-medium">
@@ -531,13 +525,13 @@
                       {filteredMachines.length + 1} Matching Systems
                     </h3>
                   </div>
-
+                  
                   {/* Converting Group Card */}
                   <div className="mb-4 p-4 bg-red-50 border-2 border-red-200 rounded-lg">
                     <div className="text-xs text-red-600 font-bold mb-1">THE CONVERTING GROUP</div>
                     <div className="text-sm font-semibold text-gray-800">Custom Engineering</div>
                   </div>
-
+                  
                   {/* Machine Previews */}
                   <div className="space-y-2">
                     {filteredMachines.map((machine, idx) => (
@@ -560,7 +554,7 @@
       return (
         <div className="bg-white rounded-2xl shadow-lg p-12 max-w-2xl mx-auto border border-gray-200">
           <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">Digital Finishing Configurator</h1>
-
+          
           <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-6 mb-8">
             <p className="text-gray-700 leading-relaxed">
               You've made the right choice in choosing an HP Indigo Press! The Converting Group Digital Experts have created this tool to narrow down the right digital finisher to pair with your press.
@@ -626,12 +620,12 @@
           <div className="mb-8 bg-gray-50 rounded-xl p-6">
             <img src={blueprint} alt="Machine Blueprint" className="w-full h-56 object-contain blueprint-image" />
           </div>
-
+          
           <div className="mb-2">
             <span className="text-sm font-semibold text-red-500">QUESTION 1 OF 6</span>
           </div>
           <h3 className="text-2xl font-bold text-gray-800 mb-6">What floor space do you have for a finisher?</h3>
-
+          
           <div className="grid grid-cols-2 gap-4">
             {options.map(option => (
               <div
@@ -680,12 +674,12 @@
           <div className="mb-8 bg-gray-50 rounded-xl p-6">
             <img src={blueprint} alt="Machine Section" className="w-full h-56 object-contain blueprint-image" />
           </div>
-
+          
           <div className="mb-2">
             <span className="text-sm font-semibold text-red-500">QUESTION 2 OF 6</span>
           </div>
           <h3 className="text-2xl font-bold text-gray-800 mb-8">Print, Varnish & Treatment Options</h3>
-
+          
           {/* 2.1 Print */}
           <div className="mb-8">
             <h4 className="font-semibold text-gray-700 mb-4">2.1 Print & Varnish Station</h4>
@@ -769,12 +763,12 @@
           <div className="mb-8 bg-gray-50 rounded-xl p-6">
             <img src={blueprint} alt="Machine Section" className="w-full h-56 object-contain blueprint-image" />
           </div>
-
+          
           <div className="mb-2">
             <span className="text-sm font-semibold text-red-500">QUESTION 3 OF 6</span>
           </div>
           <h3 className="text-2xl font-bold text-gray-800 mb-6">Additional Finishing Features</h3>
-
+          
           <div className="grid grid-cols-3 gap-3">
             {options.map(option => (
               <div
@@ -808,12 +802,12 @@
           <div className="mb-8 bg-gray-50 rounded-xl p-6">
             <img src={blueprint} alt="Machine Section" className="w-full h-56 object-contain blueprint-image" />
           </div>
-
+          
           <div className="mb-2">
             <span className="text-sm font-semibold text-red-500">QUESTION 4 OF 6</span>
           </div>
           <h3 className="text-2xl font-bold text-gray-800 mb-6">Die Cutting Method</h3>
-
+          
           <div className="grid grid-cols-2 gap-4">
             {options.map(option => (
               <div
@@ -847,12 +841,12 @@
           <div className="mb-8 bg-gray-50 rounded-xl p-6">
             <img src={blueprint} alt="Machine Section" className="w-full h-56 object-contain blueprint-image" />
           </div>
-
+          
           <div className="mb-2">
             <span className="text-sm font-semibold text-red-500">QUESTION 5 OF 6</span>
           </div>
           <h3 className="text-2xl font-bold text-gray-800 mb-6">Slitting Method</h3>
-
+          
           <div className="grid grid-cols-2 gap-4">
             {options.map(option => (
               <div
@@ -888,12 +882,12 @@
           <div className="mb-8 bg-gray-50 rounded-xl p-6">
             <img src={blueprint} alt="Machine Section" className="w-full h-56 object-contain blueprint-image" />
           </div>
-
+          
           <div className="mb-2">
             <span className="text-sm font-semibold text-red-500">QUESTION 6 OF 6</span>
           </div>
           <h3 className="text-2xl font-bold text-gray-800 mb-8">Rewinding Configuration</h3>
-
+          
           {/* 6.1 Rewinding Type */}
           <div className="mb-8">
             <h4 className="font-semibold text-gray-700 mb-4">6.1 Rewinding Type</h4>
@@ -981,7 +975,7 @@
                       </div>
                     </div>
                   </div>
-
+                  
                   <div className="flex flex-wrap gap-2 mb-4">
                     <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">{machine.Size}</span>
                     {machine.Print.length > 0 && machine.Print.map((p, i) => (
@@ -1002,7 +996,7 @@
                     {machine.Knife !== 'No' && <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">Knife</span>}
                     {machine.Turret !== 'No' && <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">Turret {machine.Turret === 'Optional' ? '(Opt)' : ''}</span>}
                   </div>
-
+                  
                   <a href="#" className="text-red-600 underline text-sm font-semibold hover:text-red-700">View Brochure →</a>
                 </div>
               ))}
