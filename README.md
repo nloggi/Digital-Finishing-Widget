@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Finishing Configurator</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f8f9fa;
+    }
+    
+    .option-card {
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .option-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.9) 100%);
+      transition: all 0.3s ease;
+    }
+    
+    .option-card:hover::before {
+      background: linear-gradient(to bottom, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.85) 100%);
+    }
+    
+    .option-card-content {
+      position: relative;
+      z-index: 1;
+    }
+    
+    .selected-card {
+      border: 3px solid #EF4444 !important;
+      box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3);
+      transform: translateY(-2px);
+    }
+    
+    .selected-card::before {
+      background: linear-gradient(to bottom, rgba(239, 68, 68, 0.1) 0%, rgba(255,255,255,0.95) 100%);
+    }
+    
+    .disabled-card {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+    
+    .next-button {
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .next-button:disabled {
+      background: #d1d5db;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    
+    .next-button:not(:disabled) {
+      background: #EF4444;
+    }
+    
+    .next-button:not(:disabled):hover {
+      background: #dc2626;
+      box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+      transform: translateY(-1px);
+    }
+    
+    .badge {
+      background: #EF4444;
+      color: white;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .badge:hover {
+      background: #dc2626;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+      transform: translateY(-1px);
+    }
+    
+    .blueprint-image {
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.1));
+    }
+    
+    .machine-preview {
+      background: white;
+      border-radius: 12px;
+      padding: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      transition: all 0.2s ease;
+    }
+    
+    .machine-preview:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transform: translateX(4px);
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // Complete machine database - ALL 62 machines
+    const machineDatabase = [
+      {"OEM":"AB Graphics","Model":"Digicon Series 3","SQFT":"490","Size":"Modular","Corona":"Yes","Print":["Flexo"],"ColdFoil":"Yes","HotFoil":"Yes","DigitalEmb":"Yes","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"Yes","FullRotary":"Yes","SemiRotary":"Yes","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"1","Turret":"Optional"},
+      {"OEM":"AB Graphics","Model":"Digicon Lite 3","SQFT":"156.8","Size":"Ultra Compact","Corona":"Yes","Print":["Flexo"],"ColdFoil":"Optional","HotFoil":"No","DigitalEmb":"No","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"Yes","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"2","Turret":"Optional"},
+      {"OEM":"AB Graphics","Model":"Digilase","SQFT":"214.2","Size":"Compact","Corona":"No","Print":[],"ColdFoil":"No","HotFoil":"No","DigitalEmb":"No","Lamination":"Optional","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"No","Knife":"No","Laser":"Yes","Slitting":"No","Rewinds":"1","Turret":"Optional"},
+      {"OEM":"AB Graphics","Model":"Digicon 3000","SQFT":"392","Size":"Modular","Corona":"Yes","Print":["Flexo"],"ColdFoil":"Yes","HotFoil":"Yes","DigitalEmb":"Yes","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"Yes","FullRotary":"Yes","SemiRotary":"Yes","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"2","Turret":"Optional"},
+      {"OEM":"Graphotronics","Model":"DCL2 Modular Digital Finishing","SQFT":"315","Size":"Modular","Corona":"Yes","Print":["Flexo"],"ColdFoil":"Yes","HotFoil":"Optional","DigitalEmb":"Yes","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"Optional","FullRotary":"Yes","SemiRotary":"Yes","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"2","Turret":"Optional"},
+      {"OEM":"Graphotronics","Model":"CF2 Compact Digital Finishing","SQFT":"224","Size":"Compact","Corona":"Optional","Print":[],"ColdFoil":"Optional","HotFoil":"No","DigitalEmb":"No","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"Yes","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"2","Turret":"Optional"},
+      {"OEM":"Graphotronics","Model":"SCF Super Compact Finishing","SQFT":"137.2","Size":"Ultra Compact","Corona":"Optional","Print":[],"ColdFoil":"Optional","HotFoil":"No","DigitalEmb":"No","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"Yes","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"1","Turret":"Optional"},
+      {"OEM":"Graphotronics","Model":"DCL2 HAPTIC Digital","SQFT":"364","Size":"Modular","Corona":"Yes","Print":["Flexo"],"ColdFoil":"Yes","HotFoil":"Yes","DigitalEmb":"Yes","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"Optional","FullRotary":"Yes","SemiRotary":"Yes","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"2","Turret":"Optional"},
+      {"OEM":"GM Finishing","Model":"DC350Nano","SQFT":"126","Size":"Ultra Compact","Corona":"Optional","Print":["Flexo"],"ColdFoil":"No","HotFoil":"No","DigitalEmb":"No","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"Yes","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"1","Turret":"Optional"},
+      {"OEM":"GM Finishing","Model":"DC330Mini","SQFT":"189","Size":"Compact","Corona":"Optional","Print":[],"ColdFoil":"No","HotFoil":"No","DigitalEmb":"No","Lamination":"Optional","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"Yes","Knife":"No","Laser":"No","Slitting":"Optional","Rewinds":"1","Turret":"Optional"},
+      {"OEM":"GM Finishing","Model":"DC350Flex","SQFT":"273","Size":"Compact","Corona":"Yes","Print":["Flexo"],"ColdFoil":"Yes","HotFoil":"No","DigitalEmb":"No","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"No","FullRotary":"Yes","SemiRotary":"Yes","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"2","Turret":"Yes"},
+      {"OEM":"GM Finishing","Model":"DC350Flex+","SQFT":"322","Size":"Modular","Corona":"Yes","Print":["Flexo"],"ColdFoil":"Yes","HotFoil":"Optional","DigitalEmb":"No","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"No","FullRotary":"Yes","SemiRotary":"Yes","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"2","Turret":"Yes"},
+      {"OEM":"Gonderflex","Model":"Rotoworx 330","SQFT":"168","Size":"Compact","Corona":"No","Print":[],"ColdFoil":"No","HotFoil":"No","DigitalEmb":"No","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"Yes","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"1","Turret":"Optional"},
+      {"OEM":"CEI","Model":"BOSS Digital Finisher 13","SQFT":"224","Size":"Compact","Corona":"No","Print":[],"ColdFoil":"No","HotFoil":"No","DigitalEmb":"No","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"No","Knife":"Yes","Laser":"No","Slitting":"Yes","Rewinds":"1","Turret":"No"},
+      {"OEM":"CEI","Model":"BOSS Digital Finisher 17","SQFT":"224","Size":"Compact","Corona":"No","Print":[],"ColdFoil":"No","HotFoil":"No","DigitalEmb":"No","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"No","Knife":"Yes","Laser":"No","Slitting":"Yes","Rewinds":"1","Turret":"No"},
+      {"OEM":"Brotech","Model":"CDF 330/420","SQFT":"273","Size":"Compact","Corona":"Optional","Print":[],"ColdFoil":"Optional","HotFoil":"No","DigitalEmb":"No","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"Yes","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"2","Turret":"Optional"},
+      {"OEM":"Brotech","Model":"CDF PLUS 330/420","SQFT":"329","Size":"Modular","Corona":"Optional","Print":[],"ColdFoil":"Yes","HotFoil":"No","DigitalEmb":"No","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"Yes","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"2","Turret":"Optional"},
+      {"OEM":"Brotech","Model":"SDF/SDF Plus","SQFT":"147","Size":"Ultra Compact","Corona":"Yes","Print":["Flexo"],"ColdFoil":"Yes","HotFoil":"Yes","DigitalEmb":"Yes","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"Yes","FullRotary":"No","SemiRotary":"Yes","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"2","Turret":"Optional"},
+      {"OEM":"Brotech","Model":"iDM 330","SQFT":"168","Size":"Compact","Corona":"Optional","Print":[],"ColdFoil":"Optional","HotFoil":"No","DigitalEmb":"No","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"Yes","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"1","Turret":"Optional"},
+      {"OEM":"Daco Solutions","Model":"DF350SR","SQFT":"224","Size":"Compact","Corona":"Optional","Print":[],"ColdFoil":"Optional","HotFoil":"No","DigitalEmb":"No","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"Yes","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"2","Turret":"Optional"},
+      {"OEM":"Daco Solutions","Model":"DF350SRD","SQFT":"119","Size":"Ultra Compact","Corona":"Optional","Print":[],"ColdFoil":"Optional","HotFoil":"No","DigitalEmb":"No","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"Yes","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"2","Turret":"Optional"},
+      {"OEM":"Daco Solutions","Model":"DF250SRD","SQFT":"46.2","Size":"Ultra Compact","Corona":"Optional","Print":[],"ColdFoil":"No","HotFoil":"No","DigitalEmb":"No","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"Yes","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"1","Turret":"Optional"},
+      {"OEM":"Eclipse Label","Model":"Mini+","SQFT":"67.2","Size":"Ultra Compact","Corona":"No","Print":[],"ColdFoil":"No","HotFoil":"No","DigitalEmb":"No","Lamination":"Optional","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"No","Knife":"Yes","Laser":"No","Slitting":"Optional","Rewinds":"1","Turret":"No"},
+      {"OEM":"Eclipse Label","Model":"LF220-HS","SQFT":"140","Size":"Ultra Compact","Corona":"No","Print":[],"ColdFoil":"No","HotFoil":"No","DigitalEmb":"No","Lamination":"Optional","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"No","Knife":"Yes","Laser":"No","Slitting":"Optional","Rewinds":"1","Turret":"No"},
+      {"OEM":"Eclipse Label","Model":"LF220-LAS","SQFT":"154","Size":"Ultra Compact","Corona":"No","Print":[],"ColdFoil":"No","HotFoil":"No","DigitalEmb":"No","Lamination":"Optional","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"No","Knife":"No","Laser":"Yes","Slitting":"Optional","Rewinds":"1","Turret":"No"},
+      {"OEM":"Eclipse Label","Model":"LF330","SQFT":"189","Size":"Compact","Corona":"No","Print":[],"ColdFoil":"No","HotFoil":"No","DigitalEmb":"No","Lamination":"Optional","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"No","Knife":"Yes","Laser":"No","Slitting":"Optional","Rewinds":"1","Turret":"No"},
+      {"OEM":"Eclipse Label","Model":"LF350-S","SQFT":"189","Size":"Compact","Corona":"No","Print":[],"ColdFoil":"No","HotFoil":"No","DigitalEmb":"No","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"No","Knife":"Yes","Laser":"No","Slitting":"Yes","Rewinds":"1","Turret":"No"},
+      {"OEM":"Eclipse Label","Model":"LF350-HS","SQFT":"224","Size":"Compact","Corona":"No","Print":[],"ColdFoil":"No","HotFoil":"No","DigitalEmb":"No","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"No","Knife":"Yes","Laser":"No","Slitting":"Yes","Rewinds":"1","Turret":"No"},
+      {"OEM":"Arrow Systems","Model":"Aries","SQFT":"84","Size":"Ultra Compact","Corona":"No","Print":[],"ColdFoil":"Optional","HotFoil":"No","DigitalEmb":"No","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"Yes","Knife":"No","Laser":"Yes","Slitting":"Yes","Rewinds":"1","Turret":"No"},
+      {"OEM":"Arrow Systems","Model":"Arrow Eco-300","SQFT":"119","Size":"Ultra Compact","Corona":"No","Print":[],"ColdFoil":"No","HotFoil":"No","DigitalEmb":"No","Lamination":"Optional","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"No","Knife":"Yes","Laser":"No","Slitting":"Optional","Rewinds":"1","Turret":"No"},
+      {"OEM":"Arrow Systems","Model":"EZCut Series","SQFT":"147","Size":"Ultra Compact","Corona":"No","Print":[],"ColdFoil":"No","HotFoil":"No","DigitalEmb":"No","Lamination":"Optional","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"No","Knife":"Yes","Laser":"No","Slitting":"Optional","Rewinds":"1","Turret":"No"},
+      {"OEM":"Arrow Systems","Model":"ArrowCut Nova","SQFT":"168","Size":"Compact","Corona":"No","Print":[],"ColdFoil":"No","HotFoil":"No","DigitalEmb":"No","Lamination":"Optional","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"No","Knife":"Yes","Laser":"No","Slitting":"Optional","Rewinds":"1","Turret":"No"},
+      {"OEM":"Arrow Systems","Model":"ArrowJet Nova 250R","SQFT":"224","Size":"Compact","Corona":"No","Print":["Inkjet"],"ColdFoil":"No","HotFoil":"No","DigitalEmb":"No","Lamination":"Yes","Curing":[],"Embossing":"No","FullRotary":"No","SemiRotary":"No","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"1","Turret":"Optional"},
+      {"OEM":"Arrow Systems","Model":"Taurus Laser","SQFT":"287","Size":"Compact","Corona":"No","Print":[],"ColdFoil":"No","HotFoil":"No","DigitalEmb":"No","Lamination":"Optional","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"No","Knife":"No","Laser":"Yes","Slitting":"No","Rewinds":"1","Turret":"No"},
+      {"OEM":"Delta ModTech","Model":"Spectrum Finishing","SQFT":"364","Size":"Modular","Corona":"Yes","Print":[],"ColdFoil":"Yes","HotFoil":"Yes","DigitalEmb":"Optional","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"Yes","FullRotary":"No","SemiRotary":"Yes","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"2","Turret":"Optional"},
+      {"OEM":"Delta ModTech","Model":"Crusader Rotary","SQFT":"420","Size":"Full Converting","Corona":"Yes","Print":["Flexo"],"ColdFoil":"Yes","HotFoil":"Yes","DigitalEmb":"Optional","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"Yes","FullRotary":"Yes","SemiRotary":"No","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"3","Turret":"Yes"},
+      {"OEM":"Delta ModTech","Model":"Crusader FLEX","SQFT":"287","Size":"Compact","Corona":"Yes","Print":["Flexo"],"ColdFoil":"Yes","HotFoil":"Yes","DigitalEmb":"Optional","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"Yes","FullRotary":"Yes","SemiRotary":"Yes","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"2","Turret":"Yes"},
+      {"OEM":"DPR Labeling","Model":"Scorpio Series","SQFT":"147","Size":"Ultra Compact","Corona":"No","Print":[],"ColdFoil":"No","HotFoil":"No","DigitalEmb":"No","Lamination":"Optional","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"No","Knife":"Yes","Laser":"No","Slitting":"Optional","Rewinds":"1","Turret":"No"},
+      {"OEM":"DPR Labeling","Model":"Virgo Desktop","SQFT":"84","Size":"Ultra Compact","Corona":"No","Print":[],"ColdFoil":"No","HotFoil":"No","DigitalEmb":"No","Lamination":"Optional","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"No","Knife":"Yes","Laser":"No","Slitting":"Optional","Rewinds":"1","Turret":"No"},
+      {"OEM":"DPR Labeling","Model":"Taurus Laser","SQFT":"287","Size":"Compact","Corona":"No","Print":[],"ColdFoil":"No","HotFoil":"No","DigitalEmb":"No","Lamination":"Optional","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"No","Knife":"No","Laser":"Yes","Slitting":"No","Rewinds":"1","Turret":"No"},
+      {"OEM":"BOBST Group","Model":"DIGITAL MASTER 340","SQFT":"462","Size":"Modular","Corona":"Yes","Print":[],"ColdFoil":"Yes","HotFoil":"Yes","DigitalEmb":"Yes","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"Yes","FullRotary":"Yes","SemiRotary":"No","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"3","Turret":"Yes"},
+      {"OEM":"BOBST Group","Model":"DIGITAL MASTER 510","SQFT":"553","Size":"Full Converting","Corona":"Yes","Print":[],"ColdFoil":"Yes","HotFoil":"Yes","DigitalEmb":"Yes","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"Yes","FullRotary":"Yes","SemiRotary":"No","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"3","Turret":"Yes"},
+      {"OEM":"Lemu Group","Model":"MA 350+","SQFT":"224","Size":"Compact","Corona":"Yes","Print":[],"ColdFoil":"Yes","HotFoil":"Yes","DigitalEmb":"Yes","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"Yes","FullRotary":"Yes","SemiRotary":"Yes","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"3","Turret":"Yes"},
+      {"OEM":"Lemu Group","Model":"MX 350+","SQFT":"287","Size":"Compact","Corona":"Yes","Print":[],"ColdFoil":"Yes","HotFoil":"Yes","DigitalEmb":"Yes","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"Yes","FullRotary":"Yes","SemiRotary":"Yes","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"3","Turret":"Yes"},
+      {"OEM":"Lemu Group","Model":"MI 350 Inkjet","SQFT":"364","Size":"Modular","Corona":"Yes","Print":["Inkjet"],"ColdFoil":"Yes","HotFoil":"Yes","DigitalEmb":"Yes","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"Yes","FullRotary":"Yes","SemiRotary":"Yes","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"2","Turret":"Yes"},
+      {"OEM":"Prati","Model":"DIGIFASTone","SQFT":"327.6","Size":"Modular","Corona":"Optional","Print":["Flexo"],"ColdFoil":"Optional","HotFoil":"No","DigitalEmb":"No","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"Yes","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"2","Turret":"Optional"},
+      {"OEM":"Rotocontrol","Model":"DT 340 Series","SQFT":"273","Size":"Compact","Corona":"Yes","Print":[],"ColdFoil":"Optional","HotFoil":"No","DigitalEmb":"No","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"No","FullRotary":"Yes","SemiRotary":"Yes","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"2","Turret":"Optional"},
+      {"OEM":"Cartes","Model":"GT360","SQFT":"364","Size":"Modular","Corona":"Yes","Print":["Flexo"],"ColdFoil":"Yes","HotFoil":"Yes","DigitalEmb":"Yes","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"Yes","FullRotary":"Yes","SemiRotary":"Yes","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"2","Turret":"Optional"},
+      {"OEM":"Cartes","Model":"Gemini Laser","SQFT":"238","Size":"Compact","Corona":"No","Print":["Inkjet"],"ColdFoil":"Yes","HotFoil":"Yes","DigitalEmb":"Yes","Lamination":"Optional","Curing":["UV","LED"],"Embossing":"Yes","FullRotary":"No","SemiRotary":"No","Knife":"No","Laser":"Yes","Slitting":"No","Rewinds":"2","Turret":"No"},
+      {"OEM":"Werosys","Model":"CCL","SQFT":"147","Size":"Ultra Compact","Corona":"Yes","Print":[],"ColdFoil":"Optional","HotFoil":"No","DigitalEmb":"Optional","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"No","FullRotary":"Yes","SemiRotary":"Yes","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"2","Turret":"Yes"},
+      {"OEM":"Spartanics","Model":"L-Series","SQFT":"238","Size":"Compact","Corona":"No","Print":[],"ColdFoil":"No","HotFoil":"No","DigitalEmb":"No","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"No","Knife":"No","Laser":"Yes","Slitting":"Yes","Rewinds":"2","Turret":"No"},
+      {"OEM":"Vinsak","Model":"LVF-330","SQFT":"189","Size":"Compact","Corona":"No","Print":[],"ColdFoil":"No","HotFoil":"No","DigitalEmb":"No","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"No","Knife":"No","Laser":"Yes","Slitting":"Yes","Rewinds":"1","Turret":"No"},
+      {"OEM":"Vinsak","Model":"USAR Digital","SQFT":"224","Size":"Compact","Corona":"Yes","Print":[],"ColdFoil":"Yes","HotFoil":"Yes","DigitalEmb":"Yes","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"Yes","FullRotary":"Yes","SemiRotary":"Yes","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"2","Turret":"Yes"},
+      {"OEM":"Afinia Label","Model":"DLF-140S","SQFT":"84","Size":"Ultra Compact","Corona":"No","Print":[],"ColdFoil":"No","HotFoil":"No","DigitalEmb":"No","Lamination":"Optional","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"No","Knife":"Yes","Laser":"No","Slitting":"Optional","Rewinds":"1","Turret":"No"},
+      {"OEM":"Afinia Label","Model":"DLF-220S","SQFT":"119","Size":"Ultra Compact","Corona":"No","Print":[],"ColdFoil":"No","HotFoil":"No","DigitalEmb":"No","Lamination":"Optional","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"No","Knife":"Yes","Laser":"No","Slitting":"Optional","Rewinds":"1","Turret":"No"},
+      {"OEM":"Afinia Label","Model":"DLF-220L","SQFT":"154","Size":"Ultra Compact","Corona":"No","Print":[],"ColdFoil":"No","HotFoil":"No","DigitalEmb":"No","Lamination":"Optional","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"No","Knife":"Yes","Laser":"Yes","Slitting":"Optional","Rewinds":"1","Turret":"No"},
+      {"OEM":"Valloy","Model":"DUOBLADE SX","SQFT":"119","Size":"Ultra Compact","Corona":"No","Print":[],"ColdFoil":"No","HotFoil":"No","DigitalEmb":"No","Lamination":"Optional","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"No","Knife":"Yes","Laser":"No","Slitting":"Optional","Rewinds":"1","Turret":"No"},
+      {"OEM":"Valloy","Model":"DUOBLADE F","SQFT":"168","Size":"Compact","Corona":"No","Print":[],"ColdFoil":"No","HotFoil":"No","DigitalEmb":"No","Lamination":"Optional","Curing":["UV","LED"],"Embossing":"No","FullRotary":"No","SemiRotary":"No","Knife":"Yes","Laser":"No","Slitting":"Optional","Rewinds":"1","Turret":"No"},
+      {"OEM":"SMAG Graphique","Model":"Digital Galaxie","SQFT":"327.6","Size":"Modular","Corona":"Optional","Print":["Flexo"],"ColdFoil":"Yes","HotFoil":"Yes","DigitalEmb":"No","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"Yes","FullRotary":"No","SemiRotary":"Yes","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"2","Turret":"Optional"},
+      {"OEM":"SMAG Graphique","Model":"iCUBE","SQFT":"154","Size":"Ultra Compact","Corona":"Optional","Print":["Inkjet"],"ColdFoil":"Optional","HotFoil":"Optional","DigitalEmb":"No","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"Optional","FullRotary":"No","SemiRotary":"Yes","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"1","Turret":"Optional"},
+      {"OEM":"Lombardi Converting","Model":"Digistar","SQFT":"364","Size":"Modular","Corona":"Yes","Print":["Flexo"],"ColdFoil":"Yes","HotFoil":"Yes","DigitalEmb":"Optional","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"Yes","FullRotary":"Yes","SemiRotary":"Yes","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"3","Turret":"Yes"},
+      {"OEM":"Rotatek","Model":"Universal","SQFT":"420","Size":"Full Converting","Corona":"Yes","Print":["Flexo"],"ColdFoil":"Yes","HotFoil":"Yes","DigitalEmb":"No","Lamination":"Yes","Curing":["UV","LED"],"Embossing":"Yes","FullRotary":"Yes","SemiRotary":"No","Knife":"No","Laser":"No","Slitting":"Yes","Rewinds":"3","Turret":"Yes"}
+    ];
+
+    // Image URLs - using direct file paths
+    const imageUrls = {
+      // Size options
+      'ultracompact': './assets/Ultra Compact Digital Dinisher.webp',
+      'compact': './assets/Compact Digital Finisher.webp',
+      'modular': './assets/Modular Digital Finishing Unit.webp',
+      'fullconverting': './assets/Full Converting Line.webp',
+      // Print options
+      'flexo': './assets/Flexo Ink Station.webp',
+      'inkjet': './assets/Ink Jet System.webp',
+      'screen': './assets/Screen Print Station.webp',
+      // Curing
+      'uv': './assets/UV Curing.webp',
+      'led': './assets/LED Curing.webp',
+      'corona': './assets/Carona Treatment.webp',
+      // Finishing
+      'lamination': './assets/Lamination for Unit.webp',
+      'digitalemb': './assets/Digital Embellishment.webp',
+      'hotfoil': './assets/Hot Foil Stamping.webp',
+      'coldfoil': './assets/Cold Foil.webp',
+      'embossing': './assets/Embossing.webp',
+      // Die cutting
+      'semirotary': './assets/Semi-rotary Die Cut.webp',
+      'fullrotary': './assets/Rotary Die Cut.webp',
+      'laser': './assets/Laser Die Cut.webp',
+      'knife': './assets/Digital Knife Plotter.webp',
+      // Rewinding
+      'single': './assets/Sinle product rewind.webp',
+      'dual': './assets/Dual Product Rewind.webp',
+      'semiauto': './assets/Semi Auto Turret.webp',
+      'fullyauto': './assets/auto turret.webp',
+      // Engineering drawings
+      'blueprint_default': './assets/Application_based_Engineering_Solutions.webp',
+      'blueprint_ultracompact': './assets/Area_Locator_Ultra_Compact.webp',
+      'blueprint_compact': './assets/Area_Locator_Compact.webp',
+      'blueprint_modular': './assets/Area_Locator_Modular__1_.webp',
+      'blueprint_full': './assets/Area_Locator_Full_Converting__7_.webp',
+      // Question specific drawings
+      'ultracompact_q2': './assets/ultra_comp_q2_3_4_5.webp',
+      'ultracompact_q6': './assets/UC_6.webp',
+      'compact_q2': './assets/Compact_q2_3_4.webp',
+      'compact_q5': './assets/compact_q5_6.webp',
+      'modular_q2': './assets/Modular_q2_3_4_5.webp',
+      'modular_q6': './assets/Modular_q6.webp',
+      'full_q2': './assets/Full_Conv_q2.webp',
+      'full_q3': './assets/Full_Conv_q3_4.webp',
+      'full_q5': './assets/Full_Conv_q5_6.webp'
+    };
+
+    function App() {
+      const [currentStep, setCurrentStep] = useState(0);
+      const [formData, setFormData] = useState({
+        name: '',
+        jobTitle: '',
+        company: '',
+        email: ''
+      });
+      const [selections, setSelections] = useState({
+        size: null,
+        print: [],
+        curing: null,
+        corona: null,
+        finishing: [],
+        dieCutting: null,
+        slitting: null,
+        rewinding: null,
+        turretType: null
+      });
+
+      const filterMachines = () => {
+        let filtered = [...machineDatabase];
+        
+        // Size filter
+        if (selections.size) {
+          filtered = filtered.filter(m => m.Size === selections.size);
+        }
+        
+        // Print filter
+        if (selections.print.length > 0 && !selections.print.includes('None')) {
+          filtered = filtered.filter(machine => {
+            return selections.print.every(p => 
+              machine.Print.includes(p) || machine.Print.length === 0
+            );
+          });
+        }
+        
+        // Curing filter
+        if (selections.curing && selections.curing !== 'None') {
+          filtered = filtered.filter(m => m.Curing.includes(selections.curing));
+        }
+        
+        // Corona filter
+        if (selections.corona === 'Yes') {
+          filtered = filtered.filter(m => m.Corona !== 'No');
+        }
+        
+        // Finishing features
+        if (selections.finishing.length > 0 && !selections.finishing.includes('None')) {
+          filtered = filtered.filter(machine => {
+            for (let feature of selections.finishing) {
+              if (feature === 'Lamination' && machine.Lamination === 'No') return false;
+              if (feature === 'Digital Embellishments' && machine.DigitalEmb === 'No') return false;
+              if (feature === 'Hot Stamp' && machine.HotFoil === 'No') return false;
+              if (feature === 'Cold Foil' && machine.ColdFoil === 'No') return false;
+              if (feature === 'Embossing' && machine.Embossing === 'No') return false;
+            }
+            return true;
+          });
+        }
+        
+        // Die cutting
+        if (selections.dieCutting) {
+          filtered = filtered.filter(machine => {
+            if (selections.dieCutting === 'Semi-Rotary Traditional') return machine.SemiRotary !== 'No';
+            if (selections.dieCutting === 'Full-Rotary Traditional') return machine.FullRotary !== 'No';
+            if (selections.dieCutting === 'Laser Die Cutting') return machine.Laser !== 'No';
+            if (selections.dieCutting === 'Digital Knife Plotter') return machine.Knife !== 'No';
+            return true;
+          });
+        }
+        
+        // Slitting
+        if (selections.slitting && selections.slitting !== 'No Slitting') {
+          filtered = filtered.filter(m => m.Slitting !== 'No');
+        }
+        
+        // Rewinding
+        if (selections.rewinding === 'Turret Rewind') {
+          filtered = filtered.filter(m => m.Turret !== 'No');
+        }
+        
+        return filtered.sort((a, b) => a.Model.localeCompare(b.Model));
+      };
+
+      const filteredMachines = filterMachines();
+
+      const handleSelection = (category, value, multiSelect = false) => {
+        if (multiSelect) {
+          let current = [...selections[category]];
+          
+          if (value === 'None') {
+            setSelections({ ...selections, [category]: ['None'] });
+          } else {
+            current = current.filter(v => v !== 'None');
+            
+            if (current.includes(value)) {
+              // Deselect
+              current = current.filter(v => v !== value);
+            } else {
+              // Select
+              current.push(value);
+            }
+            
+            setSelections({ ...selections, [category]: current.length > 0 ? current : [] });
+          }
+        } else {
+          // Single select - click again to deselect
+          if (selections[category] === value) {
+            setSelections({ ...selections, [category]: null });
+          } else {
+            setSelections({ ...selections, [category]: value });
+          }
+        }
+      };
+
+      const canProceed = () => {
+        if (currentStep === 0) return formData.name && formData.email;
+        if (currentStep === 1) return selections.size !== null;
+        if (currentStep === 2) return selections.print.length > 0 && selections.curing !== null;
+        if (currentStep === 3) return selections.finishing.length > 0;
+        if (currentStep === 4) return selections.dieCutting !== null;
+        if (currentStep === 5) return selections.slitting !== null;
+        if (currentStep === 6) return selections.rewinding !== null;
+        return true;
+      };
+
+      const getBlueprint = () => {
+        if (!selections.size) return imageUrls.blueprint_default;
+        
+        const sizeKey = selections.size.toLowerCase().replace(/\s+/g, '');
+        const step = currentStep;
+        
+        if (step === 1) return imageUrls[`blueprint_${sizeKey}`];
+        if (step === 2 || step === 3 || step === 4) {
+          if (sizeKey === 'ultracompact') return imageUrls.ultracompact_q2;
+          if (sizeKey === 'compact') return imageUrls.compact_q2;
+          if (sizeKey === 'modular') return imageUrls.modular_q2;
+          if (sizeKey === 'fullconverting') return imageUrls.full_q2;
+        }
+        if (step === 5 || step === 6) {
+          if (sizeKey === 'ultracompact') return imageUrls.ultracompact_q6;
+          if (sizeKey === 'compact') return imageUrls.compact_q5;
+          if (sizeKey === 'modular') return imageUrls.modular_q6;
+          if (sizeKey === 'fullconverting') return imageUrls.full_q5;
+        }
+        
+        return imageUrls.blueprint_default;
+      };
+
+      return (
+        <div className="min-h-screen bg-gray-50">
+          {/* Header */}
+          <div className="bg-white shadow-sm py-4 px-8 flex justify-between items-center border-b border-gray-200">
+            <h1 className="text-2xl font-semibold text-gray-800">Digital Finishing Configurator</h1>
+            <img src={imageUrls.blueprint_default} alt="The Converting Group" className="h-10" />
+          </div>
+
+          {/* Main Content */}
+          <div className="container mx-auto p-6">
+            {currentStep === 0 ? (
+              <WelcomePage 
+                formData={formData} 
+                onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })} 
+                onNext={() => setCurrentStep(1)} 
+              />
+            ) : currentStep === 7 ? (
+              <ResultsPage machines={filteredMachines} selections={selections} />
+            ) : (
+              <div className="flex gap-6">
+                {/* Left Sidebar */}
+                <div className="w-80 space-y-4">
+                  <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                    <h3 className="font-semibold text-lg mb-3 text-gray-800">Your Selections</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selections.size && (
+                        <span className="badge" onClick={() => handleSelection('size', selections.size)}>
+                          {selections.size}
+                          <span className="text-xs">✕</span>
+                        </span>
+                      )}
+                      {selections.print.map(p => (
+                        <span key={p} className="badge" onClick={() => handleSelection('print', p, true)}>
+                          {p}
+                          <span className="text-xs">✕</span>
+                        </span>
+                      ))}
+                      {selections.curing && (
+                        <span className="badge" onClick={() => handleSelection('curing', selections.curing)}>
+                          {selections.curing}
+                          <span className="text-xs">✕</span>
+                        </span>
+                      )}
+                      {selections.corona && (
+                        <span className="badge" onClick={() => handleSelection('corona', selections.corona)}>
+                          Corona
+                          <span className="text-xs">✕</span>
+                        </span>
+                      )}
+                      {selections.finishing.map(f => (
+                        <span key={f} className="badge" onClick={() => handleSelection('finishing', f, true)}>
+                          {f}
+                          <span className="text-xs">✕</span>
+                        </span>
+                      ))}
+                      {selections.dieCutting && (
+                        <span className="badge" onClick={() => handleSelection('dieCutting', selections.dieCutting)}>
+                          {selections.dieCutting}
+                          <span className="text-xs">✕</span>
+                        </span>
+                      )}
+                      {selections.slitting && (
+                        <span className="badge" onClick={() => handleSelection('slitting', selections.slitting)}>
+                          {selections.slitting}
+                          <span className="text-xs">✕</span>
+                        </span>
+                      )}
+                      {selections.rewinding && (
+                        <span className="badge" onClick={() => handleSelection('rewinding', selections.rewinding)}>
+                          {selections.rewinding}
+                          <span className="text-xs">✕</span>
+                        </span>
+                      )}
+                      {selections.turretType && (
+                        <span className="badge" onClick={() => handleSelection('turretType', selections.turretType)}>
+                          {selections.turretType}
+                          <span className="text-xs">✕</span>
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                    <p className="text-sm text-gray-600 leading-relaxed">
+                      {getStepInfo(currentStep)}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Main Question Area */}
+                <div className="flex-1">
+                  {currentStep === 1 && <Question1 selections={selections} onSelect={handleSelection} images={imageUrls} blueprint={getBlueprint()} />}
+                  {currentStep === 2 && <Question2 selections={selections} onSelect={handleSelection} images={imageUrls} blueprint={getBlueprint()} />}
+                  {currentStep === 3 && <Question3 selections={selections} onSelect={handleSelection} images={imageUrls} blueprint={getBlueprint()} />}
+                  {currentStep === 4 && <Question4 selections={selections} onSelect={handleSelection} images={imageUrls} blueprint={getBlueprint()} />}
+                  {currentStep === 5 && <Question5 selections={selections} onSelect={handleSelection} images={imageUrls} blueprint={getBlueprint()} />}
+                  {currentStep === 6 && <Question6 selections={selections} onSelect={handleSelection} images={imageUrls} blueprint={getBlueprint()} />}
+                  
+                  {/* Navigation */}
+                  <div className="flex justify-between mt-6">
+                    {currentStep > 1 && (
+                      <button
+                        onClick={() => setCurrentStep(currentStep - 1)}
+                        className="px-8 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-medium"
+                      >
+                        ← Previous
+                      </button>
+                    )}
+                    <button
+                      onClick={() => setCurrentStep(currentStep + 1)}
+                      disabled={!canProceed()}
+                      className="next-button ml-auto px-8 py-3 text-white rounded-lg font-medium"
+                    >
+                      {currentStep === 6 ? 'See Results →' : 'Next →'}
+                    </button>
+                  </div>
+                  
+                  {/* No Results Warning */}
+                  {!filteredMachines.length && (
+                    <div className="text-sm text-red-500 text-right mt-3 font-medium">
+                      ⚠️ No finishers match all capabilities. Consider The Converting Group custom engineering.
+                    </div>
+                  )}
+                </div>
+
+                {/* Right Sidebar - Results */}
+                <div className="w-72 bg-white rounded-xl shadow-sm p-6 border border-gray-200 max-h-[800px] overflow-y-auto">
+                  <div className="sticky top-0 bg-white pb-3 mb-3 border-b border-gray-200">
+                    <h3 className="font-semibold text-lg text-gray-800">
+                      {filteredMachines.length + 1} Matching Systems
+                    </h3>
+                  </div>
+                  
+                  {/* Converting Group Card */}
+                  <div className="mb-4 p-4 bg-red-50 border-2 border-red-200 rounded-lg">
+                    <div className="text-xs text-red-600 font-bold mb-1">THE CONVERTING GROUP</div>
+                    <div className="text-sm font-semibold text-gray-800">Custom Engineering</div>
+                  </div>
+                  
+                  {/* Machine Previews */}
+                  <div className="space-y-2">
+                    {filteredMachines.map((machine, idx) => (
+                      <div key={idx} className="machine-preview">
+                        <div className="text-xs font-bold text-gray-700">{machine.OEM}</div>
+                        <div className="text-xs text-gray-600">{machine.Model}</div>
+                        <div className="text-xs text-gray-500 mt-1">{machine.Size}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    function WelcomePage({ formData, onChange, onNext }) {
+      return (
+        <div className="bg-white rounded-2xl shadow-lg p-12 max-w-2xl mx-auto border border-gray-200">
+          <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">Digital Finishing Configurator</h1>
+          
+          <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-6 mb-8">
+            <p className="text-gray-700 leading-relaxed">
+              You've made the right choice in choosing an HP Indigo Press! The Converting Group Digital Experts have created this tool to narrow down the right digital finisher to pair with your press.
+            </p>
+          </div>
+
+          <div className="space-y-4 mb-8">
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={onChange}
+              placeholder="Name *"
+              className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-red-400 focus:border-transparent transition"
+            />
+            <input
+              type="text"
+              name="jobTitle"
+              value={formData.jobTitle}
+              onChange={onChange}
+              placeholder="Job Title"
+              className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-red-400 focus:border-transparent transition"
+            />
+            <input
+              type="text"
+              name="company"
+              value={formData.company}
+              onChange={onChange}
+              placeholder="Company"
+              className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-red-400 focus:border-transparent transition"
+            />
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={onChange}
+              placeholder="Email *"
+              className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-red-400 focus:border-transparent transition"
+            />
+          </div>
+
+          <button
+            onClick={onNext}
+            disabled={!formData.name || !formData.email}
+            className="w-full next-button px-8 py-4 text-white rounded-xl text-lg font-semibold"
+          >
+            Get Started →
+          </button>
+        </div>
+      );
+    }
+
+    function Question1({ selections, onSelect, images, blueprint }) {
+      const options = [
+        { name: 'Ultra Compact', key: 'Ultra Compact', image: images.ultracompact },
+        { name: 'Compact', key: 'Compact', image: images.compact },
+        { name: 'Modular', key: 'Modular', image: images.modular },
+        { name: 'Full Converting', key: 'Full Converting', image: images.fullconverting }
+      ];
+
+      return (
+        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
+          <div className="mb-8 bg-gray-50 rounded-xl p-6">
+            <img src={blueprint} alt="Machine Blueprint" className="w-full h-56 object-contain blueprint-image" />
+          </div>
+          
+          <div className="mb-2">
+            <span className="text-sm font-semibold text-red-500">QUESTION 1 OF 6</span>
+          </div>
+          <h3 className="text-2xl font-bold text-gray-800 mb-6">What floor space do you have for a finisher?</h3>
+          
+          <div className="grid grid-cols-2 gap-4">
+            {options.map(option => (
+              <div
+                key={option.key}
+                onClick={() => onSelect('size', option.key)}
+                className={`option-card cursor-pointer border-2 rounded-xl p-6 h-56 flex items-end transition ${
+                  selections.size === option.key ? 'selected-card' : 'border-gray-200 hover:border-red-300'
+                }`}
+                style={{ backgroundImage: `url(${option.image})` }}
+              >
+                <div className="option-card-content w-full">
+                  <h4 className="text-lg font-bold text-gray-800">{option.name}</h4>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    function Question2({ selections, onSelect, images, blueprint }) {
+      const printOptions = [
+        { name: 'Flexo Station', key: 'Flexo', image: images.flexo },
+        { name: 'Screen Print', key: 'Screen', image: images.screen },
+        { name: 'Inkjet Head', key: 'Inkjet', image: images.inkjet },
+        { name: 'No Additional Printing', key: 'None', image: '' }
+      ];
+
+      const curingOptions = [
+        { name: 'UV Drying', key: 'UV', image: images.uv },
+        { name: 'LED Drying', key: 'LED', image: images.led },
+        { name: 'No Drying', key: 'None', image: '' }
+      ];
+
+      const coronaOptions = [
+        { name: 'Corona Treatment', key: 'Yes', image: images.corona },
+        { name: 'No Corona', key: 'No', image: '' }
+      ];
+
+      const hasNonePrint = selections.print.includes('None');
+      const hasPrintSelected = selections.print.length > 0;
+      const hasCuringSelected = selections.curing !== null;
+
+      return (
+        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
+          <div className="mb-8 bg-gray-50 rounded-xl p-6">
+            <img src={blueprint} alt="Machine Section" className="w-full h-56 object-contain blueprint-image" />
+          </div>
+          
+          <div className="mb-2">
+            <span className="text-sm font-semibold text-red-500">QUESTION 2 OF 6</span>
+          </div>
+          <h3 className="text-2xl font-bold text-gray-800 mb-8">Print, Varnish & Treatment Options</h3>
+          
+          {/* 2.1 Print */}
+          <div className="mb-8">
+            <h4 className="font-semibold text-gray-700 mb-4">2.1 Print & Varnish Station</h4>
+            <div className="grid grid-cols-4 gap-3">
+              {printOptions.map(option => (
+                <div
+                  key={option.key}
+                  onClick={() => onSelect('print', option.key, true)}
+                  className={`option-card cursor-pointer border-2 rounded-xl p-4 h-36 flex items-end transition ${
+                    selections.print.includes(option.key) ? 'selected-card' : 'border-gray-200 hover:border-red-300'
+                  } ${hasNonePrint && option.key !== 'None' ? 'disabled-card' : ''}`}
+                  style={{ backgroundImage: option.image ? `url(${option.image})` : 'none' }}
+                >
+                  <div className="option-card-content w-full">
+                    <p className="text-sm font-semibold text-gray-800">{option.name}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 2.2 Curing */}
+          <div className={`mb-8 transition ${!hasPrintSelected ? 'opacity-40 pointer-events-none' : ''}`}>
+            <h4 className="font-semibold text-gray-700 mb-4">2.2 Curing Method</h4>
+            <div className="grid grid-cols-3 gap-3">
+              {curingOptions.map(option => (
+                <div
+                  key={option.key}
+                  onClick={() => onSelect('curing', option.key)}
+                  className={`option-card cursor-pointer border-2 rounded-xl p-4 h-36 flex items-end transition ${
+                    selections.curing === option.key ? 'selected-card' : 'border-gray-200 hover:border-red-300'
+                  }`}
+                  style={{ backgroundImage: option.image ? `url(${option.image})` : 'none' }}
+                >
+                  <div className="option-card-content w-full">
+                    <p className="text-sm font-semibold text-gray-800">{option.name}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 2.3 Corona (Optional) */}
+          <div className={`transition ${!hasCuringSelected ? 'opacity-40 pointer-events-none' : ''}`}>
+            <h4 className="font-semibold text-gray-700 mb-4">2.3 Corona Treatment (Optional)</h4>
+            <div className="grid grid-cols-2 gap-3">
+              {coronaOptions.map(option => (
+                <div
+                  key={option.key}
+                  onClick={() => onSelect('corona', option.key)}
+                  className={`option-card cursor-pointer border-2 rounded-xl p-4 h-36 flex items-end transition ${
+                    selections.corona === option.key ? 'selected-card' : 'border-gray-200 hover:border-red-300'
+                  }`}
+                  style={{ backgroundImage: option.image ? `url(${option.image})` : 'none' }}
+                >
+                  <div className="option-card-content w-full">
+                    <p className="text-sm font-semibold text-gray-800">{option.name}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function Question3({ selections, onSelect, images, blueprint }) {
+      const options = [
+        { name: 'Lamination', key: 'Lamination', image: images.lamination },
+        { name: 'Digital Embellishments', key: 'Digital Embellishments', image: images.digitalemb },
+        { name: 'Hot Stamp', key: 'Hot Stamp', image: images.hotfoil },
+        { name: 'Cold Foil', key: 'Cold Foil', image: images.coldfoil },
+        { name: 'Embossing', key: 'Embossing', image: images.embossing },
+        { name: 'No Additional Features', key: 'None', image: '' }
+      ];
+
+      const hasNone = selections.finishing.includes('None');
+
+      return (
+        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
+          <div className="mb-8 bg-gray-50 rounded-xl p-6">
+            <img src={blueprint} alt="Machine Section" className="w-full h-56 object-contain blueprint-image" />
+          </div>
+          
+          <div className="mb-2">
+            <span className="text-sm font-semibold text-red-500">QUESTION 3 OF 6</span>
+          </div>
+          <h3 className="text-2xl font-bold text-gray-800 mb-6">Additional Finishing Features</h3>
+          
+          <div className="grid grid-cols-3 gap-3">
+            {options.map(option => (
+              <div
+                key={option.key}
+                onClick={() => onSelect('finishing', option.key, true)}
+                className={`option-card cursor-pointer border-2 rounded-xl p-4 h-36 flex items-end transition ${
+                  selections.finishing.includes(option.key) ? 'selected-card' : 'border-gray-200 hover:border-red-300'
+                } ${hasNone && option.key !== 'None' ? 'disabled-card' : ''}`}
+                style={{ backgroundImage: option.image ? `url(${option.image})` : 'none' }}
+              >
+                <div className="option-card-content w-full">
+                  <p className="text-sm font-semibold text-gray-800">{option.name}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    function Question4({ selections, onSelect, images, blueprint }) {
+      const options = [
+        { name: 'Semi-Rotary Traditional', key: 'Semi-Rotary Traditional', image: images.semirotary },
+        { name: 'Full-Rotary Traditional', key: 'Full-Rotary Traditional', image: images.fullrotary },
+        { name: 'Laser Die Cutting', key: 'Laser Die Cutting', image: images.laser },
+        { name: 'Digital Knife Plotter', key: 'Digital Knife Plotter', image: images.knife }
+      ];
+
+      return (
+        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
+          <div className="mb-8 bg-gray-50 rounded-xl p-6">
+            <img src={blueprint} alt="Machine Section" className="w-full h-56 object-contain blueprint-image" />
+          </div>
+          
+          <div className="mb-2">
+            <span className="text-sm font-semibold text-red-500">QUESTION 4 OF 6</span>
+          </div>
+          <h3 className="text-2xl font-bold text-gray-800 mb-6">Die Cutting Method</h3>
+          
+          <div className="grid grid-cols-2 gap-4">
+            {options.map(option => (
+              <div
+                key={option.key}
+                onClick={() => onSelect('dieCutting', option.key)}
+                className={`option-card cursor-pointer border-2 rounded-xl p-6 h-44 flex items-end transition ${
+                  selections.dieCutting === option.key ? 'selected-card' : 'border-gray-200 hover:border-red-300'
+                }`}
+                style={{ backgroundImage: `url(${option.image})` }}
+              >
+                <div className="option-card-content w-full">
+                  <h4 className="text-base font-bold text-gray-800">{option.name}</h4>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    function Question5({ selections, onSelect, images, blueprint }) {
+      const options = [
+        { name: 'Shear Slitting', key: 'Shear' },
+        { name: 'Razor Slitting', key: 'Razor' },
+        { name: 'Crush Cutting', key: 'Crush' },
+        { name: 'No Slitting', key: 'No Slitting' }
+      ];
+
+      return (
+        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
+          <div className="mb-8 bg-gray-50 rounded-xl p-6">
+            <img src={blueprint} alt="Machine Section" className="w-full h-56 object-contain blueprint-image" />
+          </div>
+          
+          <div className="mb-2">
+            <span className="text-sm font-semibold text-red-500">QUESTION 5 OF 6</span>
+          </div>
+          <h3 className="text-2xl font-bold text-gray-800 mb-6">Slitting Method</h3>
+          
+          <div className="grid grid-cols-2 gap-4">
+            {options.map(option => (
+              <div
+                key={option.key}
+                onClick={() => onSelect('slitting', option.key)}
+                className={`cursor-pointer border-2 rounded-xl p-6 h-36 flex items-center justify-center transition ${
+                  selections.slitting === option.key ? 'selected-card bg-red-50' : 'border-gray-200 hover:border-red-300 bg-white'
+                }`}
+              >
+                <h4 className="text-base font-bold text-gray-800">{option.name}</h4>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    function Question6({ selections, onSelect, images, blueprint }) {
+      const rewindOptions = [
+        { name: 'Single to Dual Product Rewind', key: 'Single/Dual', image: images.dual },
+        { name: 'Turret Rewind', key: 'Turret Rewind', image: images.semiauto }
+      ];
+
+      const turretOptions = [
+        { name: 'Semi-Auto', key: 'Semi-Auto' },
+        { name: 'Fully Auto', key: 'Fully Auto' }
+      ];
+
+      const isTurretSelected = selections.rewinding === 'Turret Rewind';
+
+      return (
+        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
+          <div className="mb-8 bg-gray-50 rounded-xl p-6">
+            <img src={blueprint} alt="Machine Section" className="w-full h-56 object-contain blueprint-image" />
+          </div>
+          
+          <div className="mb-2">
+            <span className="text-sm font-semibold text-red-500">QUESTION 6 OF 6</span>
+          </div>
+          <h3 className="text-2xl font-bold text-gray-800 mb-8">Rewinding Configuration</h3>
+          
+          {/* 6.1 Rewinding Type */}
+          <div className="mb-8">
+            <h4 className="font-semibold text-gray-700 mb-4">6.1 Rewinding Type</h4>
+            <div className="grid grid-cols-2 gap-4">
+              {rewindOptions.map(option => (
+                <div
+                  key={option.key}
+                  onClick={() => onSelect('rewinding', option.key)}
+                  className={`option-card cursor-pointer border-2 rounded-xl p-6 h-44 flex items-end transition ${
+                    selections.rewinding === option.key ? 'selected-card' : 'border-gray-200 hover:border-red-300'
+                  }`}
+                  style={{ backgroundImage: `url(${option.image})` }}
+                >
+                  <div className="option-card-content w-full">
+                    <h4 className="text-base font-bold text-gray-800">{option.name}</h4>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 6.2 Turret Type */}
+          <div className={`transition ${!isTurretSelected ? 'opacity-40 pointer-events-none' : ''}`}>
+            <h4 className="font-semibold text-gray-700 mb-4">6.2 Turret Type</h4>
+            <div className="grid grid-cols-2 gap-4">
+              {turretOptions.map(option => (
+                <div
+                  key={option.key}
+                  onClick={() => onSelect('turretType', option.key)}
+                  className={`cursor-pointer border-2 rounded-xl p-6 h-36 flex items-center justify-center transition ${
+                    selections.turretType === option.key ? 'selected-card bg-red-50' : 'border-gray-200 hover:border-red-300 bg-white'
+                  }`}
+                >
+                  <h4 className="text-base font-bold text-gray-800">{option.name}</h4>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function ResultsPage({ machines, selections }) {
+      return (
+        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-200 max-w-5xl mx-auto">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Your Perfect Match Results</h1>
+          <h2 className="text-xl text-red-500 mb-8 font-semibold">
+            {machines.length + 1} Matching Equipment System{machines.length !== 0 ? 's' : ''}
+          </h2>
+
+          {/* Converting Group Card */}
+          <div className="mb-6 p-8 bg-gradient-to-br from-red-50 to-white border-2 border-red-300 rounded-2xl shadow-md">
+            <div className="text-xs text-red-600 font-bold mb-2">THE CONVERTING GROUP</div>
+            <h3 className="text-2xl font-bold text-gray-800 mb-3">Custom Engineering Solutions</h3>
+            <p className="text-gray-700 mb-4 leading-relaxed">
+              The Converting Group Experts are veterans in taking application needs and sourcing equipment from reliable suppliers to build the appropriate machine for your needs.
+            </p>
+            <a href="#" className="inline-block px-6 py-3 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-600 transition">
+              Contact Us →
+            </a>
+          </div>
+
+          {/* Other Machines */}
+          {machines.length === 0 ? (
+            <div className="text-center py-16 text-gray-500">
+              <div className="text-6xl mb-4">🔍</div>
+              <p className="text-lg font-semibold">No standard machines match all your requirements.</p>
+              <p className="mt-2">Consider The Converting Group's custom engineering solutions!</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {machines.map((machine, idx) => (
+                <div key={idx} className="p-6 border-2 border-gray-200 rounded-xl hover:border-red-300 hover:shadow-md transition">
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <div className="text-xs text-red-600 font-bold">{machine.OEM}</div>
+                      <h3 className="text-xl font-bold text-gray-800">{machine.Model}</h3>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm text-gray-600">
+                        <span className="font-semibold">Size:</span> {machine.Size}
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        <span className="font-semibold">SQFT:</span> {machine.SQFT}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">{machine.Size}</span>
+                    {machine.Print.length > 0 && machine.Print.map((p, i) => (
+                      <span key={i} className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">{p}</span>
+                    ))}
+                    {machine.Curing.map((c, i) => (
+                      <span key={i} className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">{c}</span>
+                    ))}
+                    {machine.Corona !== 'No' && <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">Corona {machine.Corona === 'Optional' ? '(Opt)' : ''}</span>}
+                    {machine.ColdFoil !== 'No' && <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">Cold Foil {machine.ColdFoil === 'Optional' ? '(Opt)' : ''}</span>}
+                    {machine.HotFoil !== 'No' && <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">Hot Foil {machine.HotFoil === 'Optional' ? '(Opt)' : ''}</span>}
+                    {machine.DigitalEmb !== 'No' && <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">Digital Emb {machine.DigitalEmb === 'Optional' ? '(Opt)' : ''}</span>}
+                    {machine.Lamination !== 'No' && <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">Lamination {machine.Lamination === 'Optional' ? '(Opt)' : ''}</span>}
+                    {machine.Embossing !== 'No' && <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">Embossing {machine.Embossing === 'Optional' ? '(Opt)' : ''}</span>}
+                    {machine.SemiRotary !== 'No' && <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">Semi-Rotary</span>}
+                    {machine.FullRotary !== 'No' && <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">Full-Rotary</span>}
+                    {machine.Laser !== 'No' && <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">Laser</span>}
+                    {machine.Knife !== 'No' && <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">Knife</span>}
+                    {machine.Turret !== 'No' && <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">Turret {machine.Turret === 'Optional' ? '(Opt)' : ''}</span>}
+                  </div>
+                  
+                  <a href="#" className="text-red-600 underline text-sm font-semibold hover:text-red-700">View Brochure →</a>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function getStepInfo(step) {
+      const info = {
+        1: "The floor space is calculated based on the SQFT of the machine, plus realistic working area for operators. Click an option again to deselect it.",
+        2: "Select your printing and curing requirements. Multiple print stations can be combined. Click to deselect.",
+        3: "Choose embellishment features to enhance your product offerings. Click to deselect.",
+        4: "Different die cutting methods offer varying levels of precision and production speed. Click to deselect.",
+        5: "Slitting methods affect the edge quality and production efficiency. Click to deselect.",
+        6: "Rewinding configuration determines your production workflow and efficiency. Click to deselect."
+      };
+      return info[step] || "";
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
