@@ -19,7 +19,7 @@
 ## ❌ Missing Option Images (Need to be uploaded)
 
 ### Size Options (Machine Photos)
-- `Ultra Compact Digital Dinisher.webp` (Note: "Dinisher" - typo in original?)
+- `Ultra Compact Digital Finisher.webp`
 - `Compact Digital Finisher.webp`
 - `Modular Digital Finishing Unit.webp`
 - `Full Converting Line.webp`
@@ -32,7 +32,7 @@
 ### Curing Options
 - `UV Curing.webp`
 - `LED Curing.webp`
-- `Carona Treatment.webp` (Note: "Carona" - typo in original? Should be "Corona"?)
+- `Corona Treatment.webp`
 
 ### Finishing Options
 - `Lamination for Unit.webp`
@@ -48,7 +48,7 @@
 - `Digital Knife Plotter.webp`
 
 ### Rewinding Options
-- `Sinle product rewind.webp` (Note: "Sinle" - typo? Should be "Single"?)
+- `Single product rewind.webp`
 - `Dual Product Rewind.webp`
 - `Semi Auto Turret.webp`
 - `auto turret.webp`
