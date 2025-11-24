@@ -1,0 +1,63 @@
+OEM,Model,SQFT + Working Area,Web Widths (mm),Web Widths (inches),Corona Treater,Optional Print Station,Cold Foil,Hot Foil,Digital Embellishment,Lamination,UV / LED Curing,Embossing,Full Rotary,Semi-Rotary,Knife / Plotter,Laser,Slitting,# Product Rewinds,Turret Rewind Add-On,Inspection
+AB Graphics,Digicon Series 3,490,"350 mm, 430 mm, 540 mm","13.78"", 16.93"", 21.26""",Yes,Flexo,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No,No,Yes,1,Optional,Optional
+AB Graphics,Digicon Lite 3,156.8,350 mm,"13.78""",Yes,Flexo,Optional,No,No,Yes,Yes,No,No,Yes,No,No,Yes,2,Optional,Optional
+AB Graphics,Digilase,214.2,330 mm,"12.99""",No,No,No,No,No,Optional,Yes,No,No,No,No,Yes,No,1,Optional,Optional
+AB Graphics,Digicon 3000,392,762 mm,"30.0""",Yes,Flexo,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No,No,Yes,2,Optional,Optional
+Graphotronics,DCL2 Modular Digital Finishing,315,"350 mm, 450 mm, 550 mm, 670 mm, 750 mm","13.78"", 17.72"", 21.65"", 26.38"", 29.53""",Yes,Flexo,Yes,Optional,Yes,Yes,Yes,Optional,Yes,Yes,No,No,Yes,2,Optional,Optional
+Graphotronics,CF2 Compact Digital Finishing,224,"350 mm, 450 mm","13.78"", 17.72""",Optional,No,Optional,No,No,Yes,Yes,No,No,Yes,No,No,Yes,2,Optional,Optional
+Graphotronics,SCF Super Compact Finishing,137.2,350 mm,"13.78""",Optional,No,Optional,No,No,Yes,Yes,No,No,Yes,No,No,Yes,1,Optional,Optional
+Graphotronics,DCL2 HAPTIC Digital (Embellishment / Foil),364,"350 mm, 450 mm, 550 mm, 670 mm, 750 mm","13.78"", 17.72"", 21.65"", 26.38"", 29.53""",Yes,Flexo,Yes,Yes,Yes,Yes,Yes,Optional,Yes,Yes,No,No,Yes,2,Optional,Optional
+GM Finishing,DC350Nano,126,350 mm,"13.78""",Optional,Flexo,No,No,No,Yes,Yes,No,No,Yes,No,No,Yes,1,Optional,Optional
+GM Finishing,DC330Mini,189,330 mm,"12.99""",Optional,No,No,No,No,Optional,Yes,No,No,Yes,No,No,Optional,1,Optional,Optional
+GM Finishing,DC350Flex,273,"350 mm, 550 mm","13.78"", 21.65""",Yes,Flexo,Yes,No,No,Yes,Yes,No,Yes,Yes,No,No,Yes,2,Yes,Optional
+GM Finishing,DC350Flex+,322,350 mm,"13.78""",Yes,Flexo,Yes,Optional,No,Yes,Yes,No,Yes,Yes,No,No,Yes,2,Yes,Optional
+Gonderflex,Rotoworx 330,168,330 mm,"12.99""",No,No,No,No,No,Yes,Yes,,No,Yes,No,No,Yes,1,Optional,Optional
+CEI,"BOSS Digital Finisher (13"")",224,330 mm,"12.99""",No,No,No,No,No,Yes,Yes,No,No,No,Yes,No,Yes,1,No,Optional
+CEI,"BOSS Digital Finisher (17"")",224,430 mm,"16.93""",No,No,No,No,No,Yes,Yes,No,No,No,Yes,No,Yes,1,No,Optional
+Brotech,CDF 330 / 420,273,"330 mm, 420 mm","12.99"", 16.54""",Optional,No,Optional,No,No,Yes,Yes,No,No,Yes,No,No,Yes,2,Optional,Optional
+Brotech,CDF PLUS 330 / 420,329,"330 mm, 420 mm","12.99"", 16.54""",Optional,No,Yes,No,No,Yes,Yes,No,No,Yes,No,No,Yes,2,Optional,Optional
+Brotech,SDF / SDF Plus (330 / 370 / 420 / 520),147,"330 mm, 370 mm, 420 mm, 520 mm","12.99"", 14.57"", 16.54"", 20.47""",Yes,Flexo,Yes,Yes,Yes,Yes,Yes,Yes,No,Yes,No,No,Yes,2,Optional,Optional
+Brotech,iDM 330,168,330 mm,"12.99""",Optional,No,Optional,No,No,Yes,Yes,No,No,Yes,No,No,Yes,1,Optional,Optional
+Daco Solutions,DF350SR,224,350 mm,"13.78""",Optional,No,Optional,No,No,Yes,Yes,No,No,Yes,No,No,Yes,2,Optional,Optional
+Daco Solutions,DF350SRD,119,350 mm,"13.78""",Optional,No,Optional,No,No,Yes,Yes,No,No,Yes,No,No,Yes,2,Optional,Optional
+Daco Solutions,DF250SRD,46.2,250 mm,"9.84""",Optional,No,No,No,No,Yes,Yes,No,No,Yes,No,No,Yes,1,Optional,Optional
+Eclipse Label Finishing Equipment,Mini+,67.2,220 mm,"8.66""",No,No,No,No,No,Optional,Yes,No,No,No,Yes,No,Optional,1,No,Optional
+Eclipse Label Finishing Equipment,LF220-HS,140,230 mm,"9.06""",No,No,No,No,No,Optional,Yes,No,No,No,Yes,No,Optional,1,No,Optional
+Eclipse Label Finishing Equipment,LF220-LAS,154,220 mm,"8.66""",No,No,No,No,No,Optional,Yes,No,No,No,No,Yes,Optional,1,No,Optional
+Eclipse Label Finishing Equipment,LF330,189,330 mm,"12.99""",No,No,No,No,No,Optional,Yes,No,No,No,Yes,No,Optional,1,No,Optional
+Eclipse Label Finishing Equipment,LF350-S,189,350 mm,"13.78""",No,No,No,No,No,Yes,Yes,No,No,No,Yes,No,Yes,1,No,Optional
+Eclipse Label Finishing Equipment,LF350-HS,224,350 mm,"13.78""",No,No,No,No,No,Yes,Yes,No,No,No,Yes,No,Yes,1,No,Optional
+"Arrow Systems, Inc.",Aries,84,330 mm,"12.99""",No,No,Optional,No,No,Yes,Yes,No,No,Yes,No,Yes,Yes,1,No,Optional
+"Arrow Systems, Inc.",Arrow Eco-300,119,300 mm,"11.81""",No,No,No,No,No,Optional,Yes,No,No,No,Yes,No,Optional,1,No,Optional
+"Arrow Systems, Inc.",EZCut 240 / 240+ / 330A / 330R / 330R+ / 330S / 350R,147,"240 mm, 330 mm, 350 mm","9.45"", 12.99"", 13.78""",No,No,No,No,No,Optional,Yes,No,No,No,Yes,No,Optional,1,No,Optional
+"Arrow Systems, Inc.",ArrowCut Nova 250R / 330R,168,"250 mm, 330 mm","9.84"", 12.99""",No,No,No,No,No,Optional,Yes,No,No,No,Yes,No,Optional,1,No,Optional
+"Arrow Systems, Inc.",ArrowJet Nova 250R,224,250 mm,"9.84""",No,Inkjet,No,No,No,Yes,No,No,No,No,No,No,Yes,1,Optional,Optional
+"Arrow Systems, Inc.",Taurus Laser Finisher,287,350 mm,"13.78""",No,No,No,No,No,Optional,Yes,No,No,No,No,Yes,No,1,No,Optional
+Delta ModTech,Spectrum Finishing System,364,330.2 mm,"13.0""",Yes,No,Yes,Yes,Optional,Yes,Yes,Yes,No,Yes,No,No,Yes,2,Optional,Optional
+Delta ModTech,Crusader Rotary Converter,420,"254 mm, 330 mm, 406 mm, 508 mm, 609 mm","10.0"", 12.99"", 15.98"", 20.0"", 23.98""",Yes,Flexo,Yes,Yes,Optional,Yes,Yes,Yes,Yes,No,No,No,Yes,3,Yes,Optional
+Delta ModTech,Crusader FLEX,287,330 mm,"12.99""",Yes,Flexo,Yes,Yes,Optional,Yes,Yes,Yes,Yes,Yes,No,No,Yes,2,Yes,Optional
+D.P.R. Labeling (DPR),Scorpio SCR22 / SCR35 / SCR22PL / SCR35PL / Double Plotter,147,"225 mm, 350 mm","8.86"", 13.78""",No,No,No,No,No,Optional,Yes,No,No,No,Yes,No,Optional,1,No,Optional
+D.P.R. Labeling (DPR),Virgo Desktop & Double Plotter,84,"220 mm, 330 mm","8.66"", 12.99""",No,No,No,No,No,Optional,Yes,No,No,No,Yes,No,Optional,1,No,Optional
+D.P.R. Labeling (DPR),Taurus Laser Finisher,287,350 mm,"13.78""",No,No,No,No,No,Optional,Yes,No,No,No,No,Yes,No,1,No,Optional
+BOBST Group,DIGITAL MASTER 340,462,340 mm,"13.39""",Yes,No,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No,No,No,Yes,3,Yes,Optional
+BOBST Group,DIGITAL MASTER 510,553,510 mm,"20.08""",Yes,No,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No,No,No,Yes,3,Yes,Optional
+Lemu Group,MA 350+,224,350 mm,"13.78""",Yes,No,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No,No,Yes,3,Yes,Optional
+Lemu Group,MX 350+,287,350 mm,"13.78""",Yes,No,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No,No,Yes,3,Yes,Optional
+Lemu Group,MI 350 Inkjet Digital,364,350 mm,"13.78""",Yes,Inkjet,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No,No,Yes,2,Yes,Optional
+Prati,DIGIFASTone,327.6,330 mm,"12.99""",Optional,Flexo,Optional,No,No,Yes,Yes,No,No,Yes,No,No,Yes,2,Optional,Optional
+Rotocontrol,DT 340 Series,273,340 mm,"13.39""",Yes,No,Optional,No,No,Yes,Yes,No,Yes,Yes,No,No,Yes,2,Optional,Optional
+Cartes,GT360,364,360 mm,"14.17""",Yes,Flexo,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No,No,Yes,2,Optional,Optional
+Cartes,Gemini Laser (Jet D-Screen),238,360 mm,"14.17""",No,Inkjet,Yes,Yes,Yes,Optional,Yes,Yes,No,No,No,Yes,No,2,No,Optional
+Werosys,Compact Converting Line (CCL),147,550 mm,"21.65""",Yes,No,Optional,No,Optional,Yes,Yes,No,Yes,Yes,No,No,Yes,2,Yes,Optional
+Spartanics,L-Series (L-350 / L-500),238,"350 mm, 500 mm","13.78"", 19.69""",No,No,No,No,No,Yes,Yes,No,No,No,No,Yes,Yes,2,No,Optional
+Vinsak,LVF-330,189,330 mm,"12.99""",No,No,No,No,No,Yes,Yes,No,No,No,No,Yes,Yes,1,No,Optional
+Vinsak,USAR Digital Finishing Unit,224,331 mm,"12.99""",Yes,No,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No,No,Yes,2,Yes,Optional
+Afinia Label,DLF-140S,84,140 mm,"5.51""",No,No,No,No,No,Optional,Yes,No,No,No,Yes,No,Optional,1,No,Optional
+Afinia Label,DLF-220S,119,220 mm,"8.66""",No,No,No,No,No,Optional,Yes,No,No,No,Yes,No,Optional,1,No,Optional
+Afinia Label,DLF-220L,154,"220 mm, 350 mm","8.66"", 13.78""",No,No,No,No,No,Optional,Yes,No,No,No,Yes,Yes,Optional,1,No,Optional
+Valloy,DUOBLADE SX,119,350 mm,"13.78""",No,No,No,No,No,Optional,Yes,No,No,No,Yes,No,Optional,1,No,Optional
+Valloy,DUOBLADE F,168,350 mm,"13.78""",No,No,No,No,No,Optional,Yes,No,No,No,Yes,No,Optional,1,No,Optional
+SMAG Graphique,Digital Galaxie,327.6,350 mm,"13.78""",Optional,Flexo,Yes,Yes,No,Yes,Yes,Yes,No,Yes,No,No,Yes,2,Optional,Optional
+SMAG Graphique,iCUBE,154,351 mm,"13.78""",Optional,Inkjet,Optional,Optional,No,Yes,Yes,Optional,No,Yes,No,No,Yes,1,Optional,Optional
+Lombardi Converting,Digistar,364,352 mm,"13.78""",Yes,Flexo,Yes,Yes,Optional,Yes,Yes,Yes,Yes,Yes,No,No,Yes,3,Yes,Optional
+Rotatek,Universal (configured for digital finishing),420,353 mm,"13.78""",Yes,Flexo,Yes,Yes,No,Yes,Yes,Yes,Yes,No,No,No,Yes,3,Yes,Optional
